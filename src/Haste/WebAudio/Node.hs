@@ -1,5 +1,6 @@
 module Haste.WebAudio.Node 
   ( AudioNode, node, connect
+  , node2, node3, node4, node5
   , start, startFrom, stop
   , StdDestination
   , Oscillator, OscillatorType(..)
@@ -53,6 +54,22 @@ instance AudioNode Convolution where
 
 instance AudioNode Analyser where
     node = WebAudio jsAnalyserNode
+
+-- | Node generators
+node2 :: (AudioNode t1, AudioNode t2) => WebAudio (t1, t2)
+node2 = (,) <$> node <*> node
+
+node3 :: (AudioNode t1, AudioNode t2, AudioNode t3)
+      => WebAudio (t1, t2, t3)
+node3 = (,,) <$> node <*> node <*> node
+
+node4 :: (AudioNode t1, AudioNode t2, AudioNode t3, AudioNode t4)
+      => WebAudio (t1, t2, t3, t4)
+node4 = (,,,) <$> node <*> node <*> node <*> node
+
+node5 :: (AudioNode t1, AudioNode t2, AudioNode t3, AudioNode t4, AudioNode t5)
+      => WebAudio (t1, t2, t3, t4, t5)
+node5 = (,,,,) <$> node <*> node <*> node <*> node <*> node
 
 --
 -- | Node modificators
