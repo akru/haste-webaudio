@@ -5,10 +5,12 @@ module Haste.WebAudio.Node
   , StdDestination
   , Oscillator, OscillatorType(..)
   , setFreq, setType
+  , Gain, setGain
+  , Delay, setDelay
   , Analyser, setFFTSize
   , FrequencyData, getFrequencyData
   , TimeDomainData, getTimeDomainData
-  , Gain, Delay, Convolution
+  , Convolution
   ) where
 
 import Haste.WebAudio.Internal
@@ -90,6 +92,14 @@ setFreq = (liftIO .) . jsOscillatorFrequency
 setType :: Oscillator -> OscillatorType -> WebAudio ()
 setType o = liftIO . jsOscillatorType o . toLower' . show 
   where toLower' (x : xs) = toLower x : xs
+
+-- | Gain
+setGain :: Gain -> Double -> WebAudio ()
+setGain = (liftIO .) . jsGainValue
+
+-- | Delay
+setDelay :: Delay -> Double -> WebAudio ()
+setDelay = (liftIO .) . jsDelayValue
 
 -- | Analyser
 setFFTSize :: Analyser -> Int -> WebAudio ()

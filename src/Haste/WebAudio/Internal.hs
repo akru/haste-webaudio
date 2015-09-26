@@ -71,6 +71,12 @@ jsOscillatorFrequency = ffi "(function(a,b){a.frequency.value=b})"
 jsOscillatorType :: Oscillator -> String -> IO ()
 jsOscillatorType = ffi "(function(a,b){a.type=b})"
 
+jsGainValue :: Gain -> Double -> IO ()
+jsGainValue = ffi "(function(a,b){a.gain.value=b})"
+
+jsDelayValue :: Delay -> Double -> IO ()
+jsDelayValue = ffi "(function(a,b){a.delay.value=b})"
+
 jsAnalyserFFTSize :: Analyser -> Int -> IO ()
 jsAnalyserFFTSize = ffi "(function(a,b){a.fftSize=b})"
 
