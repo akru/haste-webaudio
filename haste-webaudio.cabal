@@ -15,7 +15,10 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Haste.WebAudioAPI
+  exposed-modules:     Haste.WebAudio
+                     , Haste.WebAudio.Node
+                     , Haste.WebAudio.WebAudio
+                     , Haste.WebAudio.Internal
   build-depends:       base >=4.8 && <4.9
                      , transformers
                      , haste-prim
