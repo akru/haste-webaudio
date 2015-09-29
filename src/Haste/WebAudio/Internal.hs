@@ -8,6 +8,9 @@ import Haste.Foreign
 newtype Ctx = Ctx JSAny
   deriving (ToAny, FromAny)
 
+-- | Web Audio is a monad
+newtype WebAudio a = WebAudio { unWA :: Ctx -> IO a }
+
 jsAudioContext :: IO Ctx
 jsAudioContext = ffi "(function(){window.AudioContext = window.AudioContext||window.webkitAudioContext;return new AudioContext()})"
 
@@ -75,7 +78,7 @@ jsGainValue :: Gain -> Double -> IO ()
 jsGainValue = ffi "(function(a,b){a.gain.value=b})"
 
 jsDelayValue :: Delay -> Double -> IO ()
-jsDelayValue = ffi "(function(a,b){a.delay.value=b})"
+jsDelayValue = ffi "(function(a,b){a.delayTime.value=b})"
 
 jsAnalyserFFTSize :: Analyser -> Int -> IO ()
 jsAnalyserFFTSize = ffi "(function(a,b){a.fftSize=b})"

@@ -1,24 +1,22 @@
-{-# LANGUAGE DeriveFunctor #-}
 module Haste.WebAudio.WebAudio
-  ( WebAudio(..), runWebAudio ) where
+  ( WebAudio, runWebAudio ) where
 
-import Haste.WebAudio.Internal
-import Control.Monad.IO.Class
+import Haste.WebAudio.Internal (WebAudio(..), jsAudioContext)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 
--- | Web Audio is a monad
-newtype WebAudio a = WebAudio { unWA :: Ctx -> IO a }
-  deriving Functor
+instance Functor WebAudio where
+    fmap f (WebAudio a) = WebAudio (fmap f . a)
 
 instance Applicative WebAudio where
-    pure x = WebAudio (\_ -> return x)
-    (WebAudio f) <*> (WebAudio a) = WebAudio (\c -> f c <*> a c)
+    pure = WebAudio . const . pure
+    (WebAudio f) <*> (WebAudio a) = WebAudio $ (<*>) <$> f <*> a
 
 instance Monad WebAudio where
-    (WebAudio a) >>= f = WebAudio (\c -> do { x <- a c; unWA (f x) c })
-    (WebAudio a) >> (WebAudio b) = WebAudio (\c -> a c >> b c)
+    (WebAudio a) >>= f = WebAudio $ (>>=) <$> a <*> flip (unWA . f)
+    (WebAudio a) >> (WebAudio b) = WebAudio $ (>>) <$> a <*> b
 
 instance MonadIO WebAudio where
-    liftIO x = WebAudio (\_ -> x)
+    liftIO = WebAudio . const
 
-runWebAudio :: WebAudio a -> IO a
-runWebAudio (WebAudio w) = jsAudioContext >>= w 
+runWebAudio :: MonadIO m => WebAudio a -> m a
+runWebAudio (WebAudio a) = liftIO $ jsAudioContext >>= a

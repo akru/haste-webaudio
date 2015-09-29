@@ -1,5 +1,5 @@
 module Haste.WebAudio.Node 
-  ( AudioNode, node, connect
+  ( Node, node, connect
   , node2, node3, node4, node5
   , start, startFrom, stop
   , StdDestination
@@ -14,20 +14,20 @@ module Haste.WebAudio.Node
   ) where
 
 import Haste.WebAudio.Internal
-import Haste.WebAudio.WebAudio
+import Haste.WebAudio.WebAudio ()
 import Control.Monad.IO.Class (liftIO)
 import Haste.Foreign (ToAny)
 import Data.Char (toLower)
 import Data.Int (Int8)
 
 -- | Web Audio Node type class
-class ToAny a => AudioNode a where
+class ToAny a => Node a where
     -- | Create new audio node
     node :: WebAudio a
-    -- | Connect source node to destionation node 
-    connect :: AudioNode b => a -> b -> WebAudio ()
+    -- | Connects two nodes
+    connect :: Node b => a -> b -> WebAudio ()
     connect = (liftIO .) . jsConnectNode 
-    -- | Disconnect node
+    -- | Disconnects an argument node
     disconnect :: a -> WebAudio ()
     disconnect = liftIO . jsDisconnectNode
     -- | I/O information
@@ -36,55 +36,59 @@ class ToAny a => AudioNode a where
     numberOfOutputs :: a -> WebAudio Int
     numberOfOutputs = liftIO . jsNumberOfOutputsNode 
 
-instance AudioNode StdDestination where
+instance Node StdDestination where
     node = WebAudio jsStdDestionationNode
 
 data OscillatorType = Sine | Square | Sawtooth | Triangle
   deriving (Show, Eq, Enum)
 
-instance AudioNode Oscillator where
+instance Node Oscillator where
     node = WebAudio jsOscillatorNode
 
-instance AudioNode Gain where
+instance Node Gain where
     node = WebAudio jsGainNode
 
-instance AudioNode Delay where
+instance Node Delay where
     node = WebAudio jsDelayNode
 
-instance AudioNode Convolution where
+instance Node Convolution where
     node = WebAudio jsConvolutionNode
 
-instance AudioNode Analyser where
+instance Node Analyser where
     node = WebAudio jsAnalyserNode
 
 -- | Node generators
-node2 :: (AudioNode t1, AudioNode t2) => WebAudio (t1, t2)
+node2 :: (Node t1, Node t2) => WebAudio (t1, t2)
 node2 = (,) <$> node <*> node
 
-node3 :: (AudioNode t1, AudioNode t2, AudioNode t3)
+node3 :: (Node t1, Node t2, Node t3)
       => WebAudio (t1, t2, t3)
 node3 = (,,) <$> node <*> node <*> node
 
-node4 :: (AudioNode t1, AudioNode t2, AudioNode t3, AudioNode t4)
+node4 :: (Node t1, Node t2, Node t3, Node t4)
       => WebAudio (t1, t2, t3, t4)
 node4 = (,,,) <$> node <*> node <*> node <*> node
 
-node5 :: (AudioNode t1, AudioNode t2, AudioNode t3, AudioNode t4, AudioNode t5)
+node5 :: (Node t1, Node t2, Node t3, Node t4, Node t5)
       => WebAudio (t1, t2, t3, t4, t5)
 node5 = (,,,,) <$> node <*> node <*> node <*> node <*> node
+
+-- | Source node type class
+class Node a => Source a where
+    startFrom :: a -> Int -> WebAudio ()
+    startFrom = (liftIO .) . jsNodeStart
+
+    start :: a -> WebAudio ()
+    start = flip startFrom 0
+
+    stop :: a -> WebAudio ()
+    stop = liftIO . jsNodeStop
+
+instance Source Oscillator
 
 --
 -- | Node modificators
 --
-start :: AudioNode a => a -> WebAudio ()
-start = flip startFrom 0
-
-startFrom :: AudioNode a => a -> Int -> WebAudio ()
-startFrom = (liftIO .) . jsNodeStart
-
-stop :: AudioNode a => a -> WebAudio ()
-stop = liftIO . jsNodeStop
-
 -- | Oscillator
 setFreq :: Oscillator -> Int -> WebAudio ()
 setFreq = (liftIO .) . jsOscillatorFrequency
