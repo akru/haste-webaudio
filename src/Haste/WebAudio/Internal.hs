@@ -68,14 +68,20 @@ jsNodeStart = ffi "(function(a,b){a.start(b)})"
 jsNodeStop :: ToAny a => a -> IO ()
 jsNodeStop = ffi "(function(a){a.stop()})"
 
-jsOscillatorFrequency :: Oscillator -> Int -> IO ()
+jsOscillatorFrequency :: Oscillator -> Double -> IO ()
 jsOscillatorFrequency = ffi "(function(a,b){a.frequency.value=b})"
+
+jsOscillatorFrequencyGet :: Oscillator -> IO Double
+jsOscillatorFrequencyGet = ffi "(function(a){return a.frequency.value})"
 
 jsOscillatorType :: Oscillator -> String -> IO ()
 jsOscillatorType = ffi "(function(a,b){a.type=b})"
 
 jsGainValue :: Gain -> Double -> IO ()
 jsGainValue = ffi "(function(a,b){a.gain.value=b})"
+
+jsGainValueGet :: Gain -> IO Double
+jsGainValueGet = ffi "(function(a){return a.gain.value})"
 
 jsDelayValue :: Delay -> Double -> IO ()
 jsDelayValue = ffi "(function(a,b){a.delayTime.value=b})"

@@ -4,8 +4,8 @@ module Haste.WebAudio.Node
   , start, startFrom, stop
   , StdDestination
   , Oscillator, OscillatorType(..)
-  , setFreq, setType
-  , Gain, setGain
+  , setFreq, getFreq, setType
+  , Gain, setGain, getGain
   , Delay, setDelay
   , Analyser, setFFTSize
   , FrequencyData, getFrequencyData
@@ -90,8 +90,11 @@ instance Source Oscillator
 -- | Node modificators
 --
 -- | Oscillator
-setFreq :: Oscillator -> Int -> WebAudio ()
+setFreq :: Oscillator -> Double -> WebAudio ()
 setFreq = (liftIO .) . jsOscillatorFrequency
+
+getFreq :: Oscillator -> WebAudio Double
+getFreq = liftIO . jsOscillatorFrequencyGet
 
 setType :: Oscillator -> OscillatorType -> WebAudio ()
 setType o = liftIO . jsOscillatorType o . toLower' . show 
@@ -100,6 +103,9 @@ setType o = liftIO . jsOscillatorType o . toLower' . show
 -- | Gain
 setGain :: Gain -> Double -> WebAudio ()
 setGain = (liftIO .) . jsGainValue
+
+getGain :: Gain -> WebAudio Double
+getGain = liftIO . jsGainValueGet
 
 -- | Delay
 setDelay :: Delay -> Double -> WebAudio ()

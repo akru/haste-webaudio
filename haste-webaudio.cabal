@@ -18,7 +18,7 @@ library
   exposed-modules:     Haste.WebAudio
                      , Haste.WebAudio.Node
                      , Haste.WebAudio.WebAudio
-                     , Haste.WebAudio.Internal
+  other-modules:       Haste.WebAudio.Internal
   build-depends:       base >=4.8 && <4.9
                      , transformers
                      , haste-prim
